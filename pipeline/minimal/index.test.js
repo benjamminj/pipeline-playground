@@ -1,9 +1,13 @@
 describe('simple pipeline', () => {
   const toUpper = str => str.toUpperCase();
   const prepend = pre => str => pre + str;
+  const append = suffix => str => str + suffix;
 
   test('applies the functions in reverse order', () => {
-    const res = 'string' |> toUpper |> prepend('____');
+    const res = 'string'
+      |> toUpper 
+      |> prepend('____');
+
 
     expect(res).toEqual('____STRING');
   });
@@ -22,4 +26,18 @@ describe('simple pipeline', () => {
 
     expect(res).toEqual('TESTundefined');
   });
+
+  test('usage with promises/async isn`t as nice', async () => {
+    const then = cb => promise => promise.then(cb)
+    const catch_ = cb => promise => promise.catch(cb)
+    const genPromise = (val) => new Promise(resolve => resolve(val));
+
+    const val =
+      genPromise('test')
+      |> then(toUpper)
+      |> then(prepend('_'))
+
+    const result = await val;
+    expect(result).toEqual('_TEST')
+  })
 });
